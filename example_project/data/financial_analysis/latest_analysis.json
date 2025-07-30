@@ -1,0 +1,20 @@
+{
+    "report_date": "2025-07-30T20:12:36.467156",
+    "market_summary": "Negative market outlook. Weak economic indicators and poor tech sector performance suggest a high-risk investment climate.",
+    "model_scores": {
+        "market_sentiment_score": -2.61,
+        "nasdaq_health_score": 1.7,
+        "overall_score": -0.03
+    },
+    "raw_data": {
+        "macro": {
+            "gdp_growth_rate": 2.5,
+            "inflation_rate": 1.8,
+            "unemployment_rate": 4.2
+        },
+        "micro": {
+            "nasdaq_composite_index": 13582.34,
+            "average_pe_ratio": 26.7
+        }
+    }
+}
