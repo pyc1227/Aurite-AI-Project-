@@ -9,7 +9,7 @@ from typing import Dict, Any, Optional, List, Tuple
 from loguru import logger
 
 from .config import Config
-from .database import NeonDBManager
+from .api_client import MacroAPIClient, APIConfig
 from .feature_engineer import FeatureEngineer
 from .model_manager import ModelManager
 from .openai_client import OpenAIClient
@@ -30,7 +30,7 @@ class MacroAnalysisAgent:
             self.config = Config()
             
             # Initialize components
-            self.db_manager = NeonDBManager(self.config.database)
+            self.api_client = MacroAPIClient(self.config.api)
             self.feature_engineer = FeatureEngineer()
             self.model_manager = ModelManager(self.config.model)
             self.openai_client = OpenAIClient(self.config.openai)
@@ -64,9 +64,14 @@ class MacroAnalysisAgent:
             # Perform health checks after model is loaded
             health = self.health_check()
             
-            if not all(health.values()):
-                logger.error(f"❌ Health check failed: {health}")
+            # Be more lenient - only require model to be loaded
+            if not health['model_manager']:
+                logger.error(f"❌ Model not loaded: {health}")
                 return False
+            
+            # Warn about API issues but don't fail
+            if not health['api_client']:
+                logger.warning("⚠️ API client not available - some features may not work")
             
             self.is_initialized = True
             logger.info("✅ Agent initialization complete!")
@@ -96,93 +101,76 @@ class MacroAnalysisAgent:
             
             logger.info("🎯 Generating next quarter prediction...")
             
-            # Step 1: Retrieve latest macro data
-            macro_data = self.db_manager.get_latest_macro_data()
+            # Step 1: Retrieve latest macro data from APIs
+            macro_data = self.api_client.get_latest_macro_data()
             if macro_data is None or macro_data.empty:
-                raise ValueError("No macro data available in database")
+                raise ValueError("No macro data available from APIs")
             
-            # Step 2: Engineer features
-            featured_data = self.feature_engineer.create_quarterly_features(macro_data)
-            latest_features = self.feature_engineer.get_latest_quarter_features()
+            # Step 2: Get NASDAQ data
+            nasdaq_data = self.api_client.get_nasdaq_data()
+            if nasdaq_data is None or nasdaq_data.empty:
+                logger.warning("⚠️ No NASDAQ data available, using macro data only")
+                nasdaq_data = pd.DataFrame()
             
-            if not latest_features:
-                raise ValueError("Failed to extract features from data")
-            
-            # Step 3: Make prediction
-            prediction_result = self.model_manager.predict(latest_features)
-            
-            # Step 4: Get feature importance
-            feature_importance = self.model_manager.get_feature_importance(15)
-            
-            # Step 5: Generate target quarter identifier
-            current_date = datetime.now()
-            next_quarter = self._get_next_quarter(current_date)
-            
-            # Step 6: Save prediction to database
-            self.db_manager.save_prediction(
-                prediction=prediction_result['prediction'],
-                confidence=prediction_result['confidence'],
-                features_used=latest_features,
-                model_name=prediction_result['model_name'],
-                target_quarter=next_quarter
+            # Step 3: Create features
+            quarterly_features = self.feature_engineer.create_quarterly_features(
+                macro_data, nasdaq_data, training_mode=False
             )
             
-            # Step 7: Generate OpenAI analysis (if requested)
-            openai_analysis = {}
-            if include_openai_analysis:
+            if quarterly_features is None or quarterly_features.empty:
+                raise ValueError("Failed to create quarterly features")
+            
+            # Step 4: Make prediction
+            prediction_result = self.model_manager.predict(quarterly_features)
+            
+            if prediction_result is None:
+                raise ValueError("Failed to generate prediction")
+            
+            # Step 5: Get target quarter
+            target_quarter = self._get_next_quarter(datetime.now())
+            
+            # Step 6: Save prediction
+            self.api_client.save_prediction(
+                prediction=prediction_result['prediction'],
+                confidence=prediction_result['confidence'],
+                features_used=prediction_result.get('features_used', {}),
+                model_name=prediction_result.get('model_name', 'Unified Model'),
+                target_quarter=target_quarter
+            )
+            
+            # Step 7: Generate OpenAI analysis if requested
+            openai_analysis = ""
+            if include_openai_analysis and self.openai_client.is_available():
                 try:
-                    # Generate comprehensive report
-                    prediction_report = self.openai_client.generate_prediction_report(
-                        prediction_result, latest_features, market_context
+                    openai_analysis = self._generate_openai_analysis(
+                        prediction_result, macro_data, market_context
                     )
-                    
-                    # Generate factor explanation
-                    factor_explanation = self.openai_client.explain_prediction_factors(
-                        prediction_result, feature_importance or [], latest_features
-                    )
-                    
-                    # Generate market summary
-                    market_summary = self.openai_client.generate_market_summary(
-                        latest_features, self._get_recent_predictions(5)
-                    )
-                    
-                    openai_analysis = {
-                        'prediction_report': prediction_report,
-                        'factor_explanation': factor_explanation,
-                        'market_summary': market_summary
-                    }
-                    
                 except Exception as e:
                     logger.warning(f"⚠️ OpenAI analysis failed: {e}")
-                    openai_analysis = {'error': str(e)}
             
-            # Step 8: Compile complete results
-            complete_result = {
-                'prediction': prediction_result,
-                'target_quarter': next_quarter,
-                'features': latest_features,
-                'feature_importance': feature_importance,
-                'data_summary': {
-                    'macro_records': len(macro_data),
-                    'quarterly_periods': len(featured_data),
-                    'features_engineered': len(self.feature_engineer.get_feature_names())
-                },
+            # Step 8: Compile results
+            result = {
+                'prediction': prediction_result['prediction'],
+                'confidence': prediction_result['confidence'],
+                'target_quarter': target_quarter,
+                'features': quarterly_features.to_dict('records')[-1] if not quarterly_features.empty else {},
+                'feature_importance': prediction_result.get('feature_importance', {}),
+                'data_summary': self._create_data_summary(macro_data, nasdaq_data),
                 'openai_analysis': openai_analysis,
                 'agent_info': {
                     'name': self.config.agent.name,
-                    'timestamp': datetime.now().isoformat(),
-                    'model_info': self.model_manager.get_model_info()
+                    'model_used': prediction_result.get('model_name', 'Unified Model'),
+                    'timestamp': datetime.now().isoformat()
                 }
             }
             
-            # Store for reference
-            self.last_prediction = complete_result
-            self.last_features = latest_features
+            # Update agent state
+            self.last_prediction = result
+            self.last_features = quarterly_features
             
-            logger.info(f"✅ Prediction complete: {prediction_result['prediction'].upper()} "
-                       f"({prediction_result['confidence']:.1%})")
+            logger.info(f"✅ Prediction complete: {prediction_result['prediction'].upper()} ({prediction_result['confidence']:.1%})")
             
-            return complete_result
+            return result
             
         except Exception as e:
             logger.error(f"❌ Prediction failed: {e}")
@@ -190,7 +178,7 @@ class MacroAnalysisAgent:
     
     def get_prediction_summary(self, include_technical: bool = True) -> str:
         """
-        Get a formatted summary of the latest prediction.
+        Get a summary of the latest prediction.
         
         Args:
             include_technical: Whether to include technical details
@@ -199,157 +187,128 @@ class MacroAnalysisAgent:
             Formatted prediction summary
         """
         if not self.last_prediction:
-            return "No predictions available. Run predict_next_quarter() first."
+            return "❌ No prediction available. Run predict_next_quarter() first."
         
-        try:
-            result = self.last_prediction
-            prediction = result['prediction']
-            
-            # Basic summary
-            summary = f"""
-🤖 NASDAQ 100 QUARTERLY PREDICTION
-{'=' * 50}
+        prediction = self.last_prediction['prediction']
+        confidence = self.last_prediction['confidence']
+        target_quarter = self.last_prediction['target_quarter']
+        
+        summary = f"""
+🎯 **QUARTERLY PREDICTION SUMMARY**
 
-🎯 PREDICTION: {prediction['prediction'].upper()}
-📊 CONFIDENCE: {prediction['confidence']:.1%}
-📅 TARGET QUARTER: {result['target_quarter']}
-🕐 GENERATED: {result['agent_info']['timestamp'][:19]}
-
-📈 PROBABILITY BREAKDOWN:
-   • Bullish: {prediction['probabilities']['bullish']:.1%}
-   • Bearish: {prediction['probabilities']['bearish']:.1%}
-
-🤖 MODEL INFO:
-   • Type: {prediction['model_name']}
-   • Features Used: {prediction['features_used']}
-   • Confidence Threshold: {prediction['threshold']:.1%}
-   • Meets Threshold: {'✅ YES' if prediction['meets_threshold'] else '❌ NO'}
-            """
-            
-            # Add enhanced feature importance analysis
-            if include_technical and result.get('feature_importance'):
-                summary += "\n🔍 TOP INFLUENTIAL FEATURES:"
+📊 **Prediction**: {prediction.upper()}
+🎯 **Confidence**: {confidence:.1%}
+📅 **Target Quarter**: {target_quarter}
+🤖 **Model**: {self.last_prediction['agent_info']['model_used']}
+⏰ **Generated**: {self.last_prediction['agent_info']['timestamp']}
+"""
+        
+        if include_technical and self.last_features is not None:
+            # Get top features by importance
+            feature_importance = self.last_prediction.get('feature_importance', {})
+            if feature_importance:
+                top_features = sorted(
+                    feature_importance.items(), 
+                    key=lambda x: abs(x[1]), 
+                    reverse=True
+                )[:5]
                 
-                # Categorize features for better insight
-                feature_categories = {
-                    'lag': [], 'trend': [], 'ar': [], 'cycle': [], 'cross': [], 'diff': [], 'zscore': [], 'base': []
-                }
-                
-                for i, (feature, importance) in enumerate(result['feature_importance'][:15], 1):
-                    value = result['features'].get(feature, 0.0)
-                    
-                    # Categorize the feature
-                    if '_lag_' in feature or '_lag1_' in feature or '_lag2_' in feature:
-                        feature_categories['lag'].append((feature, importance, value))
-                    elif '_trend_' in feature or '_slope_' in feature or '_acceleration' in feature:
-                        feature_categories['trend'].append((feature, importance, value))
-                    elif '_ar1' in feature or '_mean_reversion' in feature or '_persistence' in feature:
-                        feature_categories['ar'].append((feature, importance, value))
-                    elif 'cycle' in feature or 'recession' in feature:
-                        feature_categories['cycle'].append((feature, importance, value))
-                    elif '_x_' in feature or '_agreement' in feature:
-                        feature_categories['cross'].append((feature, importance, value))
-                    elif '_diff_' in feature or '_pct_' in feature:
-                        feature_categories['diff'].append((feature, importance, value))
-                    elif '_zscore' in feature or '_regime' in feature:
-                        feature_categories['zscore'].append((feature, importance, value))
-                    else:
-                        feature_categories['base'].append((feature, importance, value))
-                    
-                    summary += f"\n   {i:2d}. {feature}: {value:.3f} (importance: {importance:.3f})"
-                
-                # Add feature category summary
-                if any(feature_categories.values()):
-                    summary += "\n\n🎯 FEATURE CATEGORY ANALYSIS:"
-                    if feature_categories['lag']:
-                        summary += f"\n   📅 Lag Features: {len(feature_categories['lag'])} influential (previous quarter effects)"
-                    if feature_categories['trend']:
-                        summary += f"\n   📈 Trend Features: {len(feature_categories['trend'])} influential (long-term patterns)"
-                    if feature_categories['ar']:
-                        summary += f"\n   🔄 Autoregressive: {len(feature_categories['ar'])} influential (temporal dependencies)"
-                    if feature_categories['cycle']:
-                        summary += f"\n   🌊 Cyclical Features: {len(feature_categories['cycle'])} influential (business cycles)"
-                    if feature_categories['cross']:
-                        summary += f"\n   🔗 Cross-lag Features: {len(feature_categories['cross'])} influential (economic relationships)"
-            
-            # Add OpenAI analysis if available
-            if result.get('openai_analysis') and 'prediction_report' in result['openai_analysis']:
-                summary += f"\n\n📝 AI ANALYSIS:\n{result['openai_analysis']['prediction_report']}"
-            
-            return summary.strip()
-            
-        except Exception as e:
-            logger.error(f"❌ Error creating summary: {e}")
-            return f"Error creating summary: {e}"
+                summary += "\n🔍 **Top Features**:\n"
+                for feature, importance in top_features:
+                    summary += f"  • {feature}: {importance:.3f}\n"
+        
+        if self.last_prediction.get('openai_analysis'):
+            summary += f"\n🤖 **AI Analysis**:\n{self.last_prediction['openai_analysis']}"
+        
+        return summary
     
     def get_market_analysis(self) -> str:
         """
-        Get detailed market analysis based on current conditions.
+        Get a comprehensive market analysis.
         
         Returns:
-            Market analysis report
+            Detailed market analysis
         """
         try:
-            if not self.last_features:
-                # Get latest data
-                macro_data = self.db_manager.get_latest_macro_data(50)
-                if macro_data.empty:
-                    return "No macro data available for analysis."
-                
-                # Extract key indicators
-                latest_row = macro_data.iloc[0]
-                key_indicators = {}
-                for col in ['vix', 'unemployment_rate', 'fed_funds_rate', 'treasury_10y', 'real_gdp']:
-                    if col in latest_row:
-                        key_indicators[col] = latest_row[col]
-            else:
-                key_indicators = self.last_features
+            # Get latest macro data
+            macro_data = self.api_client.get_latest_macro_data(limit=50)
             
-            # Generate market summary
-            market_summary = self.openai_client.generate_market_summary(
-                key_indicators, self._get_recent_predictions(10)
-            )
+            if macro_data.empty:
+                return "❌ No macro data available for analysis."
             
-            return market_summary
+            # Get latest values for key indicators
+            latest = macro_data.iloc[-1] if not macro_data.empty else {}
+            
+            analysis = f"""
+📈 **MARKET ANALYSIS**
+
+🔍 **Key Indicators**:
+"""
+            
+            # Add key indicators if available
+            indicators = {
+                'fed_funds_rate': 'Federal Funds Rate',
+                'treasury_10y': '10-Year Treasury',
+                'unemployment_rate': 'Unemployment Rate',
+                'real_gdp': 'Real GDP',
+                'cpi': 'Consumer Price Index',
+                'vix': 'VIX Volatility'
+            }
+            
+            for key, name in indicators.items():
+                if key in latest and pd.notna(latest[key]):
+                    value = latest[key]
+                    analysis += f"  • {name}: {value:.2f}\n"
+            
+            # Add prediction if available
+            if self.last_prediction:
+                analysis += f"\n🎯 **Latest Prediction**: {self.last_prediction['prediction'].upper()} ({self.last_prediction['confidence']:.1%})"
+            
+            return analysis
             
         except Exception as e:
             logger.error(f"❌ Market analysis failed: {e}")
-            return f"Market analysis unavailable: {e}"
+            return f"❌ Market analysis failed: {e}"
     
     def retrain_model(self, save_model: bool = True) -> bool:
         """
         Retrain the model with latest data.
         
         Args:
-            save_model: Whether to save the trained model
+            save_model: Whether to save the retrained model
             
         Returns:
             True if successful, False otherwise
         """
         try:
-            logger.info("🔄 Starting model retraining...")
+            logger.info("🔄 Retraining model with latest data...")
             
-            # Get historical data
-            macro_data = self.db_manager.get_latest_macro_data(limit=1000)
-            if len(macro_data) < 50:
-                logger.error("❌ Insufficient data for training (need >50 records)")
+            # Get latest data
+            macro_data = self.api_client.get_latest_macro_data(limit=1000)
+            nasdaq_data = self.api_client.get_nasdaq_data()
+            
+            if macro_data.empty:
+                logger.error("❌ No macro data available for retraining")
                 return False
             
-            # Engineer features
-            featured_data = self.feature_engineer.create_quarterly_features(macro_data)
+            # Create features for training
+            quarterly_features = self.feature_engineer.create_quarterly_features(
+                macro_data, nasdaq_data, training_mode=True
+            )
             
-            if len(featured_data) < 20:
-                logger.error("❌ Insufficient quarterly data for training (need >20 quarters)")
+            if quarterly_features is None or quarterly_features.empty:
+                logger.error("❌ Failed to create features for retraining")
                 return False
             
-            # This would implement the full training pipeline from your notebook
-            # For now, return success if data is available
-            logger.info(f"✅ Training data prepared: {len(featured_data)} quarters")
+            # Retrain model
+            success = self.model_manager.retrain_model(quarterly_features, save_model)
             
-            # TODO: Implement full training pipeline
-            logger.warning("⚠️ Full retraining pipeline not implemented yet")
+            if success:
+                logger.info("✅ Model retraining completed successfully")
+            else:
+                logger.error("❌ Model retraining failed")
             
-            return True
+            return success
             
         except Exception as e:
             logger.error(f"❌ Model retraining failed: {e}")
@@ -357,94 +316,93 @@ class MacroAnalysisAgent:
     
     def health_check(self) -> Dict[str, bool]:
         """
-        Perform comprehensive health check of all components.
+        Perform health check on all components.
         
         Returns:
-            Dictionary with health status of each component
+            Dictionary with health status for each component
         """
-        health = {}
+        health_status = {
+            'api_client': False,
+            'model_manager': False,
+            'feature_engineer': False,
+            'openai_client': False
+        }
         
         try:
-            # Database health
-            db_health = self.db_manager.health_check()
-            health['database'] = db_health.get('connection', False)
-            health['macro_data'] = db_health.get('macro_table', False)
+            # Check API client - be lenient, at least one API should work
+            api_health = self.api_client.health_check()
+            health_status['api_client'] = any(api_health.values())
             
-            # Model health
-            model_info = self.model_manager.get_model_info()
-            health['model_loaded'] = model_info['loaded']
-            health['scaler_available'] = model_info['scaler_fitted']
+            # Check model manager
+            health_status['model_manager'] = self.model_manager.is_model_loaded()
             
-            # OpenAI health (basic check)
-            try:
-                # Simple test to check if API key works
-                health['openai'] = len(self.config.openai.api_key) > 10
-            except:
-                health['openai'] = False
+            # Check feature engineer (always available)
+            health_status['feature_engineer'] = True
             
-            # Configuration validation
-            health['config'] = self.config.validate()
+            # Check OpenAI client
+            health_status['openai_client'] = self.openai_client.is_available()
+            
+            logger.info(f"🔍 Health Check: {health_status}")
+            return health_status
             
         except Exception as e:
             logger.error(f"❌ Health check failed: {e}")
-            health['error'] = str(e)
-        
-        return health
+            return health_status
     
     def _get_next_quarter(self, current_date: datetime) -> str:
-        """Get the next quarter identifier."""
+        """Get the next quarter label."""
+        year = current_date.year
         current_quarter = (current_date.month - 1) // 3 + 1
+        
         if current_quarter == 4:
-            next_year = current_date.year + 1
             next_quarter = 1
+            next_year = year + 1
         else:
-            next_year = current_date.year
             next_quarter = current_quarter + 1
+            next_year = year
         
         return f"{next_year}Q{next_quarter}"
     
     def _get_recent_predictions(self, limit: int = 5) -> List[Dict]:
-        """Get recent prediction history."""
+        """Get recent predictions from API client."""
         try:
-            predictions_df = self.db_manager.get_prediction_history(limit)
-            if predictions_df.empty:
+            history_df = self.api_client.get_prediction_history(limit)
+            if history_df.empty:
                 return []
             
-            return predictions_df.to_dict('records')
-        except:
+            return history_df.to_dict('records')
+            
+        except Exception as e:
+            logger.error(f"❌ Error getting recent predictions: {e}")
             return []
     
     def get_agent_status(self) -> Dict[str, Any]:
         """
-        Get comprehensive agent status information.
+        Get comprehensive agent status.
         
         Returns:
-            Dictionary with agent status and statistics
+            Dictionary with agent status information
         """
         try:
             health = self.health_check()
             
             status = {
-                'agent_name': self.config.agent.name,
+                'name': self.config.agent.name,
                 'initialized': self.is_initialized,
                 'health': health,
-                'last_prediction': {
-                    'available': self.last_prediction is not None,
-                    'timestamp': self.last_prediction['agent_info']['timestamp'] if self.last_prediction else None,
-                    'direction': self.last_prediction['prediction']['prediction'] if self.last_prediction else None,
-                    'confidence': self.last_prediction['prediction']['confidence'] if self.last_prediction else None
-                },
-                'model_info': self.model_manager.get_model_info(),
-                'data_status': {
-                    'macro_records': len(self.db_manager.get_latest_macro_data(10)),
-                    'feature_count': len(self.feature_engineer.get_feature_names())
-                },
-                'configuration': {
-                    'confidence_threshold': self.config.model.confidence_threshold,
-                    'openai_model': self.config.openai.model,
-                    'log_level': self.config.agent.log_level
-                }
+                'last_prediction': self.last_prediction is not None,
+                'model_loaded': self.model_manager.is_model_loaded(),
+                'api_available': any(health.values()),
+                'openai_available': self.openai_client.is_available(),
+                'timestamp': datetime.now().isoformat()
             }
+            
+            if self.last_prediction:
+                status['last_prediction_details'] = {
+                    'prediction': self.last_prediction['prediction'],
+                    'confidence': self.last_prediction['confidence'],
+                    'target_quarter': self.last_prediction['target_quarter']
+                }
             
             return status
             
@@ -452,11 +410,80 @@ class MacroAnalysisAgent:
             logger.error(f"❌ Error getting agent status: {e}")
             return {'error': str(e)}
     
-    def close(self) -> None:
-        """Clean up resources and close connections."""
+    def _generate_openai_analysis(self, 
+                                 prediction_result: Dict, 
+                                 macro_data: pd.DataFrame,
+                                 market_context: Optional[str] = None) -> str:
+        """Generate OpenAI analysis for the prediction."""
         try:
-            if hasattr(self, 'db_manager'):
-                self.db_manager.close()
+            # Prepare context for OpenAI
+            context = f"""
+Prediction: {prediction_result['prediction'].upper()}
+Confidence: {prediction_result['confidence']:.1%}
+Target Quarter: {self._get_next_quarter(datetime.now())}
+
+Latest Macro Indicators:
+"""
+            
+            if not macro_data.empty:
+                latest = macro_data.iloc[-1]
+                for col in macro_data.columns:
+                    if col != 'date' and pd.notna(latest[col]):
+                        context += f"- {col}: {latest[col]:.2f}\n"
+            
+            if market_context:
+                context += f"\nAdditional Context: {market_context}"
+            
+            # Generate analysis
+            prompt = f"""
+Based on the following prediction and market data, provide a brief analysis:
+
+{context}
+
+Please provide a 2-3 sentence analysis of this prediction and the current market conditions.
+"""
+            
+            return self.openai_client.generate_analysis(prompt)
+            
+        except Exception as e:
+            logger.error(f"❌ OpenAI analysis generation failed: {e}")
+            return ""
+    
+    def _create_data_summary(self, macro_data: pd.DataFrame, nasdaq_data: pd.DataFrame) -> Dict[str, Any]:
+        """Create a summary of the data used for prediction."""
+        try:
+            summary = {
+                'macro_records': len(macro_data) if not macro_data.empty else 0,
+                'nasdaq_records': len(nasdaq_data) if not nasdaq_data.empty else 0,
+                'macro_indicators': list(macro_data.columns) if not macro_data.empty else [],
+                'data_range': {}
+            }
+            
+            if not macro_data.empty:
+                summary['data_range']['macro_start'] = macro_data['date'].min().isoformat() if 'date' in macro_data.columns else None
+                summary['data_range']['macro_end'] = macro_data['date'].max().isoformat() if 'date' in macro_data.columns else None
+            
+            if not nasdaq_data.empty:
+                summary['data_range']['nasdaq_start'] = nasdaq_data['date'].min().isoformat() if 'date' in nasdaq_data.columns else None
+                summary['data_range']['nasdaq_end'] = nasdaq_data['date'].max().isoformat() if 'date' in nasdaq_data.columns else None
+            
+            return summary
+            
+        except Exception as e:
+            logger.error(f"❌ Error creating data summary: {e}")
+            return {}
+    
+    def close(self) -> None:
+        """Clean up agent resources."""
+        try:
+            if hasattr(self, 'api_client'):
+                self.api_client.close()
+            
+            if hasattr(self, 'model_manager'):
+                self.model_manager.close()
+            
+            if hasattr(self, 'openai_client'):
+                self.openai_client.close()
             
             logger.info("🔌 Agent resources cleaned up")
             

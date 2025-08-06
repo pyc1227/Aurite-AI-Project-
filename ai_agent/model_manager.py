@@ -267,9 +267,19 @@ class ModelManager:
             for feature_name in self.feature_columns:
                 if feature_name in features:
                     value = features[feature_name]
-                    # Handle NaN/infinite values
-                    if np.isnan(value) or np.isinf(value):
-                        value = 0.0  # Use 0 as default for missing values
+                    
+                    # Handle pandas Series
+                    if hasattr(value, 'iloc'):
+                        value = value.iloc[-1] if len(value) > 0 else 0.0
+                    
+                    # Convert to float and handle NaN/infinite values
+                    try:
+                        value = float(value)
+                        if np.isnan(value) or np.isinf(value):
+                            value = 0.0  # Use 0 as default for missing values
+                    except (ValueError, TypeError):
+                        value = 0.0  # Use 0 as default for invalid values
+                    
                     feature_array.append(value)
                 else:
                     missing_features.append(feature_name)
@@ -368,21 +378,19 @@ class ModelManager:
             return {'valid': False, 'error': str(e)}
     
     def get_model_info(self) -> Dict[str, Any]:
-        """
-        Get information about the loaded model.
-        
-        Returns:
-            Dictionary with model information
-        """
-        info = {
+        """Get comprehensive model information."""
+        return {
             'loaded': self.model is not None,
             'model_type': type(self.model).__name__ if self.model else None,
-            'feature_count': len(self.feature_columns),
             'scaler_fitted': self.scaler is not None,
-            'metadata': self.model_metadata.copy()
+            'feature_count': len(self.feature_columns),
+            'model_path': self.config.model_path,
+            'metadata': self.model_metadata
         }
-        
-        return info
+    
+    def is_model_loaded(self) -> bool:
+        """Check if model is loaded."""
+        return self.model is not None
     
     def create_prediction_summary(self, prediction_result: Dict[str, Any], features: Dict[str, float]) -> str:
         """

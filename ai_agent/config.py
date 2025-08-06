@@ -11,6 +11,19 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+class APIConfig(BaseModel):
+    """API configuration settings."""
+    fred_api_key: str = Field(default="", description="FRED API key")
+    alpha_vantage_api_key: str = Field(default="", description="Alpha Vantage API key")
+    quandl_api_key: str = Field(default="", description="Quandl API key")
+    yahoo_finance_enabled: bool = Field(default=True, description="Enable Yahoo Finance")
+    fred_enabled: bool = Field(default=True, description="Enable FRED API")
+    alpha_vantage_enabled: bool = Field(default=False, description="Enable Alpha Vantage")
+    cache_duration: int = Field(default=3600, description="Cache duration in seconds")
+    max_retries: int = Field(default=3, description="Maximum API retries")
+    retry_delay: float = Field(default=1.0, description="Delay between retries")
+
+
 class DatabaseConfig(BaseModel):
     """Database configuration settings."""
     url: str = Field(..., description="Complete database URL")
@@ -51,30 +64,51 @@ class Config:
     
     def __init__(self):
         """Initialize configuration from environment variables."""
-        # Get database URL - try different common environment variable names
+        # API Configuration (replaces database)
+        self.api = APIConfig(
+            fred_api_key=self._get_env("FRED_API_KEY", ""),
+            alpha_vantage_api_key=self._get_env("ALPHA_VANTAGE_API_KEY", ""),
+            quandl_api_key=self._get_env("QUANDL_API_KEY", ""),
+            yahoo_finance_enabled=self._get_env("YAHOO_FINANCE_ENABLED", "true").lower() == "true",
+            fred_enabled=self._get_env("FRED_ENABLED", "true").lower() == "true",
+            alpha_vantage_enabled=self._get_env("ALPHA_VANTAGE_ENABLED", "false").lower() == "true",
+            cache_duration=int(self._get_env("API_CACHE_DURATION", "3600")),
+            max_retries=int(self._get_env("API_MAX_RETRIES", "3")),
+            retry_delay=float(self._get_env("API_RETRY_DELAY", "1.0"))
+        )
+        
+        # Database Configuration (kept for backward compatibility, but not used)
         db_url = None
         for env_var in ["NEON_DATABASE_URL", "NEON_DB_URL", "DATABASE_URL"]:
             db_url = os.getenv(env_var)
             if db_url:
                 break
         
-        if not db_url:
-            raise ValueError("Database URL not found. Please set NEON_DATABASE_URL, NEON_DB_URL, or DATABASE_URL")
-        
-        # Parse URL for individual components (for backward compatibility)
-        import urllib.parse
-        parsed = urllib.parse.urlparse(db_url)
-        
-        self.database = DatabaseConfig(
-            url=db_url,
-            host=parsed.hostname or self._get_env("NEON_DB_HOST", "localhost"),
-            port=parsed.port or int(self._get_env("NEON_DB_PORT", "5432")),
-            name=parsed.path.lstrip('/') or self._get_env("NEON_DB_NAME", "postgres"),
-            user=parsed.username or self._get_env("NEON_DB_USER", "postgres"),
-            password=parsed.password or self._get_env("NEON_DB_PASSWORD", ""),
-            macro_table=self._get_env("MACRO_TABLE_NAME", "macro_indicators"),  # Supports schema.table format
-            predictions_table=self._get_env("PREDICTIONS_TABLE_NAME", "market_predictions")
-        )
+        if db_url:
+            import urllib.parse
+            parsed = urllib.parse.urlparse(db_url)
+            
+            self.database = DatabaseConfig(
+                url=db_url,
+                host=parsed.hostname or self._get_env("NEON_DB_HOST", "localhost"),
+                port=parsed.port or int(self._get_env("NEON_DB_PORT", "5432")),
+                name=parsed.path.lstrip('/') or self._get_env("NEON_DB_NAME", "postgres"),
+                user=parsed.username or self._get_env("NEON_DB_USER", "postgres"),
+                password=parsed.password or self._get_env("NEON_DB_PASSWORD", ""),
+                macro_table=self._get_env("MACRO_TABLE_NAME", "macro_indicators"),
+                predictions_table=self._get_env("PREDICTIONS_TABLE_NAME", "market_predictions")
+            )
+        else:
+            # Create a dummy database config for backward compatibility
+            self.database = DatabaseConfig(
+                url="dummy://localhost",
+                host="localhost",
+                name="dummy",
+                user="dummy",
+                password="dummy",
+                macro_table="dummy",
+                predictions_table="dummy"
+            )
         
         # OpenAI configuration (optional)
         openai_api_key = os.getenv("OPENAI_API_KEY", "")
@@ -98,39 +132,30 @@ class Config:
             batch_size=int(self._get_env("BATCH_SIZE", "100"))
         )
     
-    @staticmethod
-    def _get_env(key: str, default: Optional[str] = None) -> str:
-        """Get environment variable with optional default."""
-        value = os.getenv(key, default)
-        if value is None and default is None:
-            raise ValueError(f"Environment variable {key} is required but not set")
-        return value or ""
+    def _get_env(self, key: str, default: Optional[str] = None) -> str:
+        """Get environment variable with default."""
+        return os.getenv(key, default) if default is not None else os.getenv(key, "")
     
     def validate(self) -> bool:
-        """Validate all configuration settings."""
+        """Validate configuration."""
         try:
-            # Test database connection parameters
-            if not all([self.database.host, self.database.name, self.database.user]):
-                return False
+            # Check if at least one API is enabled
+            if not (self.api.yahoo_finance_enabled or self.api.fred_enabled or self.api.alpha_vantage_enabled):
+                raise ValueError("At least one API must be enabled")
             
-            # Test OpenAI API key
-            if not self.openai.api_key or not self.openai.api_key.startswith('sk-'):
-                return False
+            # Check if required API keys are provided
+            if self.api.fred_enabled and not self.api.fred_api_key:
+                raise ValueError("FRED API key required when FRED is enabled")
             
-            # Test model paths exist (if they should)
-            # Note: We'll create these during model training
+            if self.api.alpha_vantage_enabled and not self.api.alpha_vantage_api_key:
+                raise ValueError("Alpha Vantage API key required when Alpha Vantage is enabled")
             
             return True
-        except Exception:
+            
+        except Exception as e:
+            print(f"❌ Configuration validation failed: {e}")
             return False
     
     def __repr__(self) -> str:
-        """String representation of config (hiding sensitive data)."""
-        return f"""
-Config(
-    database=DatabaseConfig(host='{self.database.host}', name='{self.database.name}'),
-    openai=OpenAIConfig(model='{self.openai.model}'),
-    model=ModelConfig(confidence_threshold={self.model.confidence_threshold}),
-    agent=AgentConfig(name='{self.agent.name}')
-)
-        """.strip() 
+        """String representation of configuration."""
+        return f"Config(api_enabled={self.api.yahoo_finance_enabled or self.api.fred_enabled}, openai_enabled={bool(self.openai.api_key)})" 

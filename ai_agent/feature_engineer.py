@@ -19,13 +19,14 @@ class FeatureEngineer:
         self.feature_columns = []
         self.quarterly_data = None
         
-    def create_quarterly_features(self, macro_data: pd.DataFrame, nasdaq_data: Optional[pd.DataFrame] = None) -> pd.DataFrame:
+    def create_quarterly_features(self, macro_data: pd.DataFrame, nasdaq_data: Optional[pd.DataFrame] = None, training_mode: bool = True) -> pd.DataFrame:
         """
         Create quarterly features from macro data and NASDAQ data.
         
         Args:
             macro_data: DataFrame with macro indicators
             nasdaq_data: Optional DataFrame with NASDAQ price data
+            training_mode: Whether to create target variable (True for training, False for prediction)
             
         Returns:
             DataFrame with quarterly aggregated features
@@ -37,7 +38,7 @@ class FeatureEngineer:
             quarterly_df = self._aggregate_to_quarterly(macro_data)
             
             # Add NASDAQ data if provided
-            if nasdaq_data is not None:
+            if nasdaq_data is not None and not nasdaq_data.empty:
                 quarterly_df = self._merge_nasdaq_data(quarterly_df, nasdaq_data)
             else:
                 # Download NASDAQ data
@@ -61,9 +62,8 @@ class FeatureEngineer:
             # 🎯 COMPATIBLE: Create only the 9 features the realistic model expects
             quarterly_df = self._create_compatible_features(quarterly_df)
             
-            # Create target variable for training (only if not in prediction mode)
-            # For prediction, we don't need target variable
-            if 'Target' not in quarterly_df.columns and len(quarterly_df) > 10:  # Only for training (more data)
+            # Create target variable for training (only if in training mode and sufficient data)
+            if training_mode and 'Target' not in quarterly_df.columns and len(quarterly_df) > 10:
                 # Ensure we have NASDAQ return data for target creation
                 if 'NASDAQ100_Return' not in quarterly_df.columns:
                     # Create synthetic target if no NASDAQ data
@@ -99,34 +99,11 @@ class FeatureEngineer:
             quarterly_df[numeric_cols] = quarterly_df[numeric_cols].replace([np.inf, -np.inf], np.nan)
             quarterly_df[numeric_cols] = quarterly_df[numeric_cols].fillna(quarterly_df[numeric_cols].median())
             
-            # Drop rows where truly essential columns are missing (only basic ones, not all features)
-            essential_cols = []
-            if 'Quarter' in quarterly_df.columns:
-                essential_cols.append('Quarter')
+            # Log feature information
+            logger.info(f"📊 Created {len(self.feature_columns)} features from {len(quarterly_df)} quarterly records")
             
-            # Only add basic macro columns that should exist
-            basic_cols = ['vix', 'unemployment_rate', 'fed_funds_rate', 'treasury_10y']
-            for col in basic_cols:
-                if col in quarterly_df.columns:
-                    essential_cols.append(col)
-            
-            if essential_cols:
-                quarterly_df = quarterly_df.dropna(subset=essential_cols)
-            
-            logger.info(f"📊 After cleaning: {len(quarterly_df)} quarters remain")
-            
+            # Store quarterly data for later use
             self.quarterly_data = quarterly_df
-            
-            logger.info(f"✅ Created {len(self.feature_columns)} features for {len(quarterly_df)} quarters")
-            logger.info(f"📊 Final data shape: {quarterly_df.shape}")
-            logger.info(f"🔍 Sample feature columns: {self.feature_columns[:5]}")
-            
-            # Debug: Check data types of final dataset
-            logger.info("🔍 Data types check:")
-            for col in quarterly_df.columns:
-                dtype = quarterly_df[col].dtype
-                sample_val = quarterly_df[col].iloc[0] if len(quarterly_df) > 0 else "N/A"
-                logger.info(f"   {col}: {dtype} (sample: {sample_val})")
             
             return quarterly_df
             

@@ -8,7 +8,7 @@ __author__ = "Macro Analysis AI Team"
 
 from .agent import MacroAnalysisAgent
 from .config import Config
-from .database import NeonDBManager  
+from .api_client import MacroAPIClient, APIConfig
 from .feature_engineer import FeatureEngineer
 from .model_manager import ModelManager
 from .openai_client import OpenAIClient
@@ -16,7 +16,8 @@ from .openai_client import OpenAIClient
 __all__ = [
     "MacroAnalysisAgent",
     "Config", 
-    "NeonDBManager",
+    "MacroAPIClient",
+    "APIConfig",
     "FeatureEngineer",
     "ModelManager",
     "OpenAIClient"
