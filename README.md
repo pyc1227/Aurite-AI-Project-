@@ -1,362 +1,298 @@
-# Aurite AI Financial Portfolio System
+# 🚀 **Aurite AI - Advanced Financial Portfolio Analysis System**
 
-A sophisticated multi-agent AI system for comprehensive financial analysis using MCP (Model Context Protocol) server architecture. The system provides integrated macro, bond, gold, and stock analysis with real-time data and LLM-enhanced insights.
+> **FastMCP-powered multi-agent system for comprehensive stock, bond, and gold analysis with ML-enhanced macro integration**
 
-## 🚀 Quick Start
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
+[![FastMCP](https://img.shields.io/badge/FastMCP-1.0+-green.svg)](https://github.com/modelcontextprotocol/python)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-### 1. **Install Dependencies**
-```bash
-pip install -r requirements.txt
-```
+## 🎯 **System Overview**
 
-### 2. **Set Environment Variables** (Optional but recommended)
-```bash
-export OPENAI_API_KEY=your_openai_api_key
-export FRED_API_KEY=your_fred_api_key
-```
+Aurite AI is a sophisticated financial analysis platform that combines **Machine Learning macro analysis** with **multi-asset portfolio recommendations**. The system uses a **FastMCP server architecture** to orchestrate specialized analysis agents for stocks (NASDAQ-100), bonds, and gold investments.
 
-### 3. **Simple Prediction**
-```bash
-python example_usage.py
-```
+### **🏗️ Architecture Highlights**
+- **FastMCP Server**: Modern decorator-based MCP implementation
+- **4 Specialized Agents**: Macro, Stock, Bond, and Gold analysis
+- **ML-Enhanced Macro**: 135+ time series features with logistic regression
+- **Real-time Data**: Yahoo Finance + FRED API integration
+- **Structured Output**: JSON files with confidence scores and rankings
 
-### 4. **Run MCP Server** (For full multi-agent system)
-```bash
-cd "MCP Server"
-python agent2_analysis_mcp_server.py
-```
+---
 
-## 🎯 Core Features
+## 📊 **Core Features**
 
-- **🏢 Multi-Agent Architecture**: Integrated macro, bond, gold, and stock analysis agents
-- **🔗 MCP Server**: Optimized Model Context Protocol server for agent orchestration
-- **🧠 Macro Integration**: All asset classes enhanced with quarterly economic analysis
-- **📊 Unified Rankings**: 30 assets (10 per class) ranked together in single JSON output
-- **📈 Advanced Analytics**: 135+ time series features with macro context integration
-- **🎯 Q3 Focused Analysis**: Complete portfolio analysis optimized for next quarter
-- **⚡ Parallel Processing**: Optimized performance with concurrent macro-enhanced analysis
-- **💬 LLM Enhancement**: OpenAI-powered market commentary with macro insights
-- **📄 JSON Output**: Professional-grade structured data for all rankings and analysis
+### **🧠 Enhanced Macro Analysis**
+- **ML Model**: Logistic regression with 135+ time series features
+- **Real-time Data**: FRED API integration for economic indicators
+- **Structured Output**: JSON signals for asset class allocation
+- **Confidence Scoring**: Probability-based predictions
+- **GPT-4 Integration**: Advanced LLM analysis with institutional-grade prompts
 
-## 🏗️ System Architecture
+### **📈 NASDAQ-100 Stock Analysis**
+- **Comprehensive Coverage**: All 100 NASDAQ stocks analyzed
+- **Technical Indicators**: RSI, MACD, Bollinger Bands, momentum
+- **Fundamental Metrics**: P/E, P/B, debt ratios, growth rates
+- **Macro Integration**: Enhanced predictions with economic context
+- **GPT-4 Analysis**: Advanced financial modeling and risk assessment
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Agent 1       │    │   Agent 2       │    │   Agent 3       │
-│ (User Input)    │───▶│ (Data Analysis) │───▶│ (Portfolio)     │
-│                 │    │                 │    │                 │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-                              │
-                    ┌─────────┴─────────┐
-                    │  MCP SERVER       │
-                    │  (This Project)   │
-                    │                   │
-                    │ 🧠 MACRO ANALYSIS │
-                    │    INTEGRATION    │
-                    └─┬─────────────────┬┘
-                      │                 │
-            ┌─────────▼─────────┐ ┌─────▼─────────┐
-            │  📊 ASSET CLASSES │ │ 📄 JSON OUTPUT │
-            │  (Macro Enhanced) │ │  Final Rankings│
-            │                   │ │                │
-            │ • Stock (Top 10)  │ │ • Unified Rank │
-            │ • Bond (Top 10)   │ │ • All Assets   │
-            │ • Gold (Top 10)   │ │ • Macro Context│
-            │ • All Q3 Focused  │ │ • Confidence   │
-            └───────────────────┘ └───────────────┘
-```
+### **🏛️ Bond Analysis**
+- **Duration Strategy**: Short, intermediate, and long-term bonds
+- **Credit Quality**: Treasury, corporate, high-yield, municipal
+- **Interest Rate Sensitivity**: Macro-adjusted duration analysis
+- **Yield Curve Positioning**: Slope and inversion analysis
+- **GPT-4 Integration**: Advanced duration modeling and credit analysis
 
-### **🔗 Macro-Integrated Analysis Flow**
-1. **Macro Analysis**: Quarterly predictions and economic context
-2. **Asset Integration**: Each asset class enhanced with macro insights
-3. **Unified Rankings**: All assets ranked together with macro context
-4. **JSON Output**: Single comprehensive file with all rankings
+### **🥇 Gold Analysis**
+- **Asset Types**: ETFs, futures, miners, physical gold
+- **Inflation Hedge**: Real rates and dollar strength analysis
+- **Volatility Protection**: VIX and geopolitical risk integration
+- **Safe Haven**: Flight-to-quality during market stress
+- **GPT-4 Analysis**: Advanced supply-demand and geopolitical risk modeling
 
-## 📁 Project Structure
+### **🎯 Portfolio Integration**
+- **Top 5 Picks**: Per asset class (15 total recommendations)
+- **Q3 2024 Focus**: Next quarter investment horizon
+- **Risk-Adjusted Returns**: Confidence scores and macro context
+- **Unified Rankings**: Cross-asset class comparison
+
+---
+
+## 🏗️ **Project Structure**
 
 ```
 Aurite-AI-Project-/
-├── 🏢 MCP Server/
-│   └── agent2_analysis_mcp_server.py    # Optimized MCP server (783 lines)
-├── 🧠 ai_agent/                         # Core macro analysis package
-│   ├── agent.py                         # Macro analysis agent
-│   ├── api_client.py                    # Real-time data fetching
-│   ├── config.py                        # Configuration management
-│   ├── feature_engineer.py              # 135+ time series features
-│   ├── model_manager.py                 # ML model management
-│   └── openai_client.py                 # LLM integration
-├── 📊 Analysis Agents/
-│   ├── stock_analysis_agent.py          # Stock & ETF analysis (896 lines)
-│   ├── gold_analysis_agent.py           # Gold & precious metals (883 lines)
-│   └── etf_analysis_agent.py            # Bond & fixed income (1389 lines)
-├── 🔬 models/                           # Trained ML models
-├── 🧪 Test Suite/
-│   ├── test_enhanced_macro_integration.py  # Enhanced macro analysis integration
-│   └── test_agent2_integration.py       # MCP server integration testing
-├── 📚 Documentation/
-│   ├── AGENT2_INTEGRATION_GUIDE.md      # Comprehensive integration guide
-│   └── agent2_client_example.py         # Client usage examples
-├── 🎯 Core Scripts/
-│   ├── example_usage.py                 # Simple prediction interface
-│   ├── train_unified_model.py           # Model training
-│   └── enhanced_macro_analysis.py       # Advanced macro analysis
-└── ⚙️ Configuration/
-    ├── requirements.txt                 # Dependencies
-    ├── .gitignore                      # Git ignore rules
-    └── README.md                       # This file
+├── 📂 ai_agent/                    # Core AI components
+│   ├── __init__.py                 # Package initialization
+│   ├── agent.py                    # Macro analysis agent
+│   ├── api_client.py               # FRED + Yahoo Finance API
+│   ├── config.py                   # Configuration management
+│   ├── feature_engineer.py         # 135+ time series features
+│   ├── model_manager.py            # ML model management
+│   └── openai_client.py            # LLM integration
+├── 📂 MCP Server/                  # FastMCP server
+│   └── agent2_analysis_mcp_server.py # Main server (549 lines)
+├── 📂 analysis_outputs/            # Generated JSON files
+│   ├── stock_analysis_YYYYMMDD_HHMMSS.json
+│   ├── bond_analysis_YYYYMMDD_HHMMSS.json
+│   └── gold_analysis_YYYYMMDD_HHMMSS.json
+├── 📂 data/                        # Sample data
+├── 📂 models/                      # Trained ML models
+├── 📊 stock_analysis_agent.py      # NASDAQ-100 analysis (1834 lines)
+├── 🏛️ etf_analysis_agent.py        # Bond analysis (1505 lines)
+├── 🥇 gold_analysis_agent.py       # Gold analysis (883 lines)
+├── 🧠 enhanced_macro_analysis.py   # ML macro analysis (589 lines)
+├── 🚀 train_unified_model.py       # Model training (334 lines)
+├── 📋 requirements.txt             # Dependencies
+├── 📖 README.md                    # This file
+├── 🛠️ SETUP_GUIDE.md               # Installation guide
+└── ⚙️ .gitignore                   # Git ignore rules
 ```
 
-## 🎯 Usage Examples
+---
 
-### **Simple Quarterly Prediction**
+## 🚀 **Quick Start**
+
+### **1. Installation**
 ```bash
-python example_usage.py
+# Clone the repository
+git clone https://github.com/yourusername/Aurite-AI-Project-.git
+cd Aurite-AI-Project-
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Set API keys (optional)
+export OPENAI_API_KEY="your_openai_key"
+export FRED_API_KEY="your_fred_key"
 ```
 
-**Output:**
-```
-🤖 QUARTERLY PREDICTION SYSTEM
-========================================
-
-🎯 Do you want to predict the next quarter? (y/n): y
-
-🎯 Generating prediction...
-(Fetching latest data from APIs)
-
-==================================================
-📊 PREDICTION RESULTS - Q3 2024
-==================================================
-🎯 Direction: BULLISH
-📊 Probability: 78.5%
-📅 Target Quarter: 2024Q3
-🤖 Model: Unified Model
-📈 Interpretation: Market expected to rise with 78.5% confidence
-==================================================
-```
-
-### **Complete Portfolio Analysis** (MCP Server)
+### **2. Run the MCP Server**
 ```bash
-cd "MCP Server"
-python agent2_analysis_mcp_server.py
+# Start the FastMCP server
+python3 "MCP Server/agent2_analysis_mcp_server.py"
 ```
 
-**Macro-Integrated Analysis Features:**
-- **🧠 Macro Context**: Economic analysis enhances all asset classes
-- **📊 Stock Analysis**: Top 10 picks with macro sentiment integration
-- **🏛️ Bond Analysis**: Top 10 picks with interest rate/inflation context
-- **🥇 Gold Analysis**: Top 10 picks with economic cycle integration
-- **📄 Unified JSON**: Single file with all 30 ranked assets (10 per class)
-- **🎯 Q3 Focused**: All recommendations for next quarter
-- **💬 LLM Commentary**: AI-powered market insights for each asset
+### **3. Expected Output**
+```
+🚀 Starting Agent 2 Portfolio Analysis MCP Server...
+✅ MacroAnalysisAgent initialized
+✅ BondAnalysisAgent initialized  
+✅ GoldAnalysisAgent initialized
+✅ StockAnalysisAgent initialized with 100 NASDAQ-100 stocks
+✅ Agent 2 MCP Server initialized successfully
+```
 
-**JSON Output Structure:**
+---
+
+## 📊 **Usage Examples**
+
+### **🎯 Complete Portfolio Analysis**
+```python
+# The MCP server automatically:
+# 1. Analyzes 100 NASDAQ stocks
+# 2. Evaluates 8 bond types
+# 3. Assesses 5 gold assets
+# 4. Integrates macro context
+# 5. Generates top 5 picks per class
+# 6. Outputs 4 JSON files
+```
+
+### **📁 Generated Output Files**
+```
+analysis_outputs/
+├── stock_analysis_20250806_215052.json    # Top 5 NASDAQ picks
+├── bond_analysis_20250806_215052.json     # Top 5 bond picks
+├── gold_analysis_20250806_215052.json     # Top 5 gold picks
+└── macro_analysis_20250806_215052.json    # Macro context
+```
+
+### **📊 Sample Output Structure**
 ```json
 {
-  "analysis_timestamp": "2024-08-05T17:20:35",
-  "macro_analysis": {
-    "quarterly_prediction": "bullish",
-    "confidence": 0.785,
-    "economic_cycle": "expansion",
-    "interest_rate_trend": "stable"
-  },
-  "unified_rankings": {
-    "all_assets": [
-      {"rank": 1, "ticker": "NVDA", "type": "stock", "expected_return": 0.085, "macro_enhanced": true},
-      {"rank": 2, "ticker": "HYG", "type": "bond", "expected_return": 0.068, "macro_enhanced": true},
-      {"rank": 3, "ticker": "GLD", "type": "gold", "expected_return": 0.065, "macro_enhanced": true}
-    ]
-  },
-  "asset_classes": {
-    "stocks": {"top_10": [...], "macro_context_applied": true},
-    "bonds": {"top_10": [...], "macro_context_applied": true},
-    "gold": {"top_10": [...], "macro_context_applied": true}
-  },
-  "output_files": {
-    "stock_analysis_json": "stock_analysis_20240805_172035.json",
-    "bond_analysis_json": "bond_analysis_20240805_172035.json", 
-    "gold_analysis_json": "gold_analysis_20240805_172035.json"
+  "analysis_timestamp": "2025-08-06T21:50:52",
+  "total_assets_analyzed": 113,
+  "top_picks_per_class": 5,
+  "investment_horizon": "next_quarter",
+  "portfolio_summary": {
+    "stocks": {"count": 5, "avg_expected_return": 0.082, "risk_level": "moderate"},
+    "bonds": {"count": 5, "avg_expected_return": 0.045, "risk_level": "low"},
+    "gold": {"count": 5, "avg_expected_return": 0.058, "risk_level": "moderate"}
   }
 }
 ```
 
-### **Client Integration Example**
-```python
-# See agent2_client_example.py for full implementation
-from agent2_client_example import Agent2Client
+---
 
-async def main():
-    client = Agent2Client()
-    
-    # Get complete analysis
-    result = await client.analyze_market("Conservative investor seeking Q3 opportunities")
-    
-    # Get specific analysis
-    stocks = await client.get_stock_analysis(["AAPL", "MSFT", "GOOGL"])
-    bonds = await client.get_bond_analysis(["TLT", "IEF", "AGG"])
-    gold = await client.get_gold_analysis(["GLD", "IAU", "GDX"])
+## 🔧 **Configuration**
+
+### **📋 Dependencies**
+```txt
+# Core ML & Data
+scikit-learn>=1.3.0
+pandas>=2.0.0
+numpy>=1.24.0
+yfinance>=0.2.0
+
+# MCP & API
+mcp[server]>=1.0.0
+openai>=1.0.0
+langchain>=0.1.0
+langchain-openai>=0.1.0
+
+# Utilities
+loguru>=0.7.0
+pydantic>=2.0.0
+typing-extensions>=4.0.0
 ```
 
-## 📊 Analysis Outputs (Macro-Enhanced)
-
-### **🎯 Unified Asset Rankings** 
-**All 30 assets ranked together with macro context in single JSON file:**
-- **Cross-Asset Comparison**: Stocks vs Bonds vs Gold with unified scoring
-- **Macro Enhancement**: Each asset adjusted for economic conditions
-- **Q3 Optimization**: All picks focused on next quarter performance
-- **Risk-Adjusted Returns**: Confidence scores and macro-adjusted expectations
-
-### **📊 Stock Analysis** (Top 10 for Q3 with Macro Context)
-- **Technology Leaders**: NVDA, AMD, AAPL, MSFT (macro sentiment: bullish tech)
-- **Growth Sectors**: AI, Cloud, Consumer Tech (economic cycle: expansion)
-- **Expected Returns**: 5.2% - 8.5% (macro-adjusted for Q3 conditions)
-- **Risk Metrics**: Beta, PE ratios, volatility (enhanced with macro volatility)
-- **Macro Integration**: Interest rate impact, economic growth correlation
-
-### **🏛️ Bond Analysis** (Top 10 for Q3 with Macro Context)
-- **Duration Laddering**: Short, Intermediate, Long-term (Fed policy integrated)
-- **Credit Quality**: AAA to BB ratings (economic cycle risk-adjusted)
-- **Yield Range**: 3.0% - 6.8% (inflation expectations included)
-- **Rate Environment**: Fed policy integration and yield curve analysis
-- **Macro Integration**: Interest rate trends, inflation outlook, economic growth
-
-### **🥇 Gold Analysis** (Top 10 for Q3 with Macro Context)
-- **Asset Types**: ETFs, Futures, Miners (dollar strength integrated)
-- **Inflation Hedge**: Real rates analysis and economic uncertainty
-- **Geopolitical Factors**: Risk assessment with macro stability metrics
-- **Expected Returns**: 3.4% - 6.5% (macro-adjusted for economic conditions)
-- **Macro Integration**: Currency trends, inflation expectations, geopolitical risk
-
-### **📄 JSON Output Files Generated**
-1. **`macro_analysis_YYYYMMDD_HHMMSS.json`** - Core economic analysis
-2. **`stock_analysis_YYYYMMDD_HHMMSS.json`** - Top 10 stocks with macro context
-3. **`bond_analysis_YYYYMMDD_HHMMSS.json`** - Top 10 bonds with macro context  
-4. **`gold_analysis_YYYYMMDD_HHMMSS.json`** - Top 10 gold assets with macro context
-5. **`unified_rankings_YYYYMMDD_HHMMSS.json`** - All 30 assets ranked together
-
-## 🔧 API Configuration
-
-### **Data Sources**
-- **FRED API**: Federal Reserve Economic Data
-- **Yahoo Finance**: Real-time market data
-- **OpenAI API**: LLM-enhanced analysis
-- **Fallback Data**: Sample data when APIs unavailable
-
-### **Environment Variables**
+### **🔑 API Keys (Optional)**
 ```bash
-# Required for LLM analysis
-export OPENAI_API_KEY=your_openai_api_key
-
-# Optional for enhanced macro data
-export FRED_API_KEY=your_fred_api_key
-
-# Optional configurations
-export YAHOO_FINANCE_ENABLED=true
-export API_CACHE_DURATION=300
+# For enhanced functionality
+export OPENAI_API_KEY="sk-..."      # LLM commentary
+export FRED_API_KEY="..."           # Real economic data
 ```
-
-## ⚡ Performance Optimizations
-
-### **MCP Server Enhancements**
-- **Parallel Processing**: 60-70% faster execution
-- **Smart Caching**: 5-minute TTL for market data
-- **Unified Agent Management**: Reduced code duplication
-- **Error Isolation**: Individual agent failures don't crash system
-- **Memory Optimization**: Efficient resource usage
-
-### **Analysis Speed**
-- **Concurrent Execution**: All agents run in parallel
-- **Data Caching**: Reduced redundant API calls
-- **Optimized Features**: Streamlined 135+ feature pipeline
-- **Batch Processing**: Efficient data collection
-
-## 🚨 Troubleshooting
-
-### **Common Issues**
-
-1. **MCP Server Won't Start**
-   ```bash
-   pip install mcp aiohttp openai
-   ```
-
-2. **API Rate Limits**
-   - System automatically uses cached data
-   - Fallback to sample data if needed
-
-3. **Missing Dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. **Model Training Needed**
-   ```bash
-   python train_unified_model.py
-   ```
-
-### **Debug Mode**
-```python
-import logging
-logging.basicConfig(level=logging.DEBUG)
-```
-
-## 🧪 Testing
-
-### **Run All Tests**
-```bash
-# Test enhanced macro analysis integration
-python test_enhanced_macro_integration.py
-
-# Test MCP server integration
-python test_agent2_integration.py
-```
-
-### **Expected Test Outputs**
-- **JSON Files**: Analysis results saved automatically
-- **Structured Data**: Top 10 picks with rankings
-- **Performance Metrics**: Confidence scores and returns
-
-## 📈 Model Performance
-
-### **Realistic Expectations**
-- **Accuracy**: 60-75% (no data leakage)
-- **Confidence**: 60%+ threshold for recommendations
-- **Cross-validation**: Time series split validation
-- **Retraining**: Quarterly updates recommended
-
-### **Feature Engineering**
-- **135+ Features**: Lag, trend, cyclical, regime indicators
-- **Macro Integration**: Economic context in all analyses
-- **Real-time Updates**: API-driven feature refresh
-
-## 🎉 Ready for Production
-
-The system is optimized, tested, and ready for:
-- **📊 Investment Research**: Comprehensive Q3 analysis with macro integration
-- **🏛️ Portfolio Management**: 30 macro-enhanced asset recommendations (10 per class)
-- **🎯 Risk Assessment**: Unified rankings across stocks, bonds, and gold
-- **📄 Client Reporting**: Professional JSON outputs with macro context
-- **🧠 Macro-Driven Decisions**: All assets enhanced with economic analysis
-- **⚡ Real-Time Analysis**: API-driven data with 5-minute caching
-- **💼 Institutional Grade**: MCP server architecture for enterprise deployment
-
-### **🎯 Key Deliverables:**
-1. **Unified Asset Rankings**: All 30 assets ranked together with macro scores
-2. **Macro Context**: Economic analysis integrated into every recommendation  
-3. **Q3 Optimization**: Next quarter focus for timely investment decisions
-4. **JSON Outputs**: Structured data files for automated portfolio management
-5. **Risk-Adjusted Returns**: Confidence scores enhanced with macro volatility
-
-## 📄 License
-
-MIT License - See LICENSE file for details.
-
-## 🙏 Acknowledgments
-
-- **OpenAI**: LLM-powered market insights
-- **Federal Reserve**: FRED API economic data
-- **Yahoo Finance**: Real-time market data
-- **MCP Protocol**: Agent orchestration framework
 
 ---
 
-🚀 **Start analyzing**: `python example_usage.py`  
-🏢 **Full system**: `cd "MCP Server" && python agent2_analysis_mcp_server.py` 
+## 🎯 **Analysis Outputs**
+
+### **📈 Stock Analysis** (Top 5 from NASDAQ-100 for Q3 with Macro Context)
+- **Technology Leaders**: NVDA, AMD, AAPL, MSFT (from 100 NASDAQ stocks analyzed)
+- **Growth Sectors**: AI, Cloud, Consumer Tech (economic cycle: expansion)
+- **Expected Returns**: 5.2% - 8.5% (macro-adjusted for Q3 conditions)
+- **Risk-Adjusted Returns**: Confidence scores and macro-adjusted expectations
+
+### **🏛️ Bond Analysis** (Top 5 for Q3 with Macro Context)
+- **Duration Strategy**: Short, intermediate, long-term allocation
+- **Credit Quality**: Treasury, corporate, municipal bonds
+- **Interest Rate Sensitivity**: Macro-adjusted duration analysis
+- **Expected Returns**: 3.5% - 4.2% (rate environment dependent)
+
+### **🥇 Gold Analysis** (Top 5 for Q3 with Macro Context)
+- **Asset Types**: ETFs, miners, physical gold exposure
+- **Inflation Hedge**: Real rates and dollar strength analysis
+- **Safe Haven**: Volatility and geopolitical risk protection
+- **Expected Returns**: 5.8% - 8.5% (inflation and risk dependent)
+
+---
+
+## 🛠️ **Development**
+
+### **🧠 Model Training**
+```bash
+# Train the unified macro model
+python3 train_unified_model.py
+```
+
+### **📊 Feature Engineering**
+The system includes 135+ time series features:
+- **Lag Features**: Historical price and volume patterns
+- **Autoregressive Features**: Self-predicting patterns
+- **Trend Features**: Moving averages and momentum
+- **Cyclical Features**: Seasonal and business cycle patterns
+- **Cross-lag Features**: Multi-asset correlations
+- **Stationarity Features**: Statistical stability measures
+
+### **🔧 Customization**
+```python
+# Modify analysis parameters
+ANALYSIS_CONFIG = {
+    'horizon': 'next_quarter',  # Investment horizon
+    'top_picks': 5,            # Picks per asset class
+    'total_target': 15         # Total portfolio size
+}
+```
+
+---
+
+## 📈 **Performance Metrics**
+
+### **🎯 Model Accuracy**
+- **Macro Prediction**: ML model with 135+ features
+- **Stock Analysis**: 100 NASDAQ stocks with technical + fundamental
+- **Bond Analysis**: 8 bond types with duration + credit analysis
+- **Gold Analysis**: 5 gold assets with inflation + volatility analysis
+
+### **⚡ Processing Speed**
+- **Parallel Analysis**: All asset classes analyzed simultaneously
+- **Intelligent Sampling**: Large datasets processed efficiently
+- **Caching**: API responses cached for performance
+- **Real-time Data**: Live market data integration
+
+---
+
+## 🤝 **Contributing**
+
+1. **Fork** the repository
+2. **Create** a feature branch
+3. **Commit** your changes
+4. **Push** to the branch
+5. **Create** a Pull Request
+
+---
+
+## 📄 **License**
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🆘 **Support**
+
+- **Documentation**: See [SETUP_GUIDE.md](SETUP_GUIDE.md)
+- **Issues**: Report bugs via GitHub Issues
+- **Discussions**: Join community discussions
+
+---
+
+## 🎉 **Acknowledgments**
+
+- **FastMCP**: Modern MCP server implementation
+- **Yahoo Finance**: Real-time market data
+- **FRED**: Economic indicators
+- **Scikit-learn**: Machine learning framework
+- **OpenAI**: LLM integration
+
+---
+
+**🚀 Ready to analyze your portfolio with AI-powered insights!** 

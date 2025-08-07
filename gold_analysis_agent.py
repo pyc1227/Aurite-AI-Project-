@@ -8,7 +8,7 @@ import json
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
-from typing import Dict, List, Tuple, Optional
+from typing import Dict, List, Tuple, Optional, Any
 import yfinance as yf
 from dataclasses import dataclass, asdict
 import logging
@@ -55,11 +55,11 @@ def check_dependencies():
 
 @dataclass
 class LLMConfig:
-    """Configuration for LLM integration"""
-    model: str = "gpt-3.5-turbo"
+    """LLM configuration for gold analysis"""
+    model: str = "gpt-4o"
     temperature: float = 0.6
     max_tokens: int = 1000
-    api_key: Optional[str] = None
+    api_key: str = ""
 
 @dataclass
 class AgentConfig:
@@ -231,16 +231,29 @@ class GoldAnalysisAgent:
         logger.info(f"🤖 {self.config.name} initialized")
     
     def _create_default_config(self) -> AgentConfig:
-        """Create default configuration for gold analysis"""
+        """Create default configuration"""
+        llm_config = LLMConfig(
+            model="gpt-4o",
+            temperature=0.6,
+            max_tokens=1000,
+            api_key=os.getenv("OPENAI_API_KEY", "")
+        )
+        
         return AgentConfig(
             name="Gold Analysis Agent",
-            system_prompt="You are an expert gold and precious metals analyst specializing in comprehensive gold market analysis.",
-            llm_config=LLMConfig(
-                model="gpt-3.5-turbo",
-                temperature=0.6,
-                max_tokens=1000,
-                api_key=os.getenv("OPENAI_API_KEY")
-            ),
+            system_prompt="""You are a senior precious metals analyst with 15+ years of experience in gold markets and commodity trading. 
+            You specialize in comprehensive gold and precious metals analysis using advanced supply-demand modeling, technical analysis, and macroeconomic insights.
+            
+            Your expertise includes:
+            - Supply-Demand Analysis: Mining production, central bank reserves, jewelry demand, industrial usage
+            - Technical Analysis: Gold price patterns, momentum indicators, support/resistance levels
+            - Macroeconomic Integration: Inflation hedge analysis, dollar strength correlation, safe haven characteristics
+            - Geopolitical Risk Assessment: Global uncertainty impact, currency devaluation protection
+            - Market Structure: Physical vs. paper gold, ETF flows, futures market dynamics
+            - Portfolio Integration: Inflation protection, diversification benefits, risk management strategies
+            
+            Provide institutional-grade gold analysis with actionable insights, clear risk assessments, and specific investment recommendations.""",
+            llm_config=llm_config,
             analysis_depth="comprehensive",
             enable_llm_commentary=True
         )
@@ -823,7 +836,7 @@ async def quick_gold_analysis(symbols: List[str] = None, api_key: str = None, ma
         name="Quick Gold Analyzer",
         system_prompt="Quick gold market analysis",
         llm_config=LLMConfig(
-            model="gpt-3.5-turbo",
+            model="gpt-4o",
             temperature=0.6,
             max_tokens=1000,
             api_key=api_key or os.getenv("OPENAI_API_KEY")
@@ -833,7 +846,7 @@ async def quick_gold_analysis(symbols: List[str] = None, api_key: str = None, ma
     agent = GoldAnalysisAgent(config)
     return await agent.analyze_gold(symbols, macro_context=macro_context)
 
-def create_custom_gold_agent(openai_api_key: str = None, model: str = "gpt-3.5-turbo") -> GoldAnalysisAgent:
+def create_custom_gold_agent(openai_api_key: str = None, model: str = "gpt-4o") -> GoldAnalysisAgent:
     """Create a custom gold analysis agent"""
     config = AgentConfig(
         name="Custom Gold Analyzer",

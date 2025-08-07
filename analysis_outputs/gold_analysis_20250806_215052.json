@@ -1,0 +1,245 @@
+{
+  "prediction_date": "2025-08-06",
+  "analysis_type": "Quantitative gold analysis",
+  "total_gold_investments": 5,
+  "horizons": {
+    "next_quarter": [
+      {
+        "ticker": "GLD",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "SPDR Gold Shares",
+        "expected_return": 0.04,
+        "rank": 1,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for GLD: neutral outlook. "
+      },
+      {
+        "ticker": "SGOL",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "abrdn Physical Gold Shares ETF",
+        "expected_return": 0.04,
+        "rank": 2,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for SGOL: neutral outlook. "
+      },
+      {
+        "ticker": "GC=F",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "Gold Dec 25",
+        "expected_return": 0.04,
+        "rank": 3,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for GC=F: neutral outlook. "
+      },
+      {
+        "ticker": "IAU",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "iShares Gold Trust",
+        "expected_return": 0.04,
+        "rank": 4,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for IAU: neutral outlook. "
+      },
+      {
+        "ticker": "GDX",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "VanEck Gold Miners ETF",
+        "expected_return": 0.04,
+        "rank": 5,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for GDX: neutral outlook. "
+      }
+    ],
+    "next_year": [
+      {
+        "ticker": "GLD",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "SPDR Gold Shares",
+        "expected_return": 0.04,
+        "rank": 1,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for GLD: neutral outlook. "
+      },
+      {
+        "ticker": "SGOL",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "abrdn Physical Gold Shares ETF",
+        "expected_return": 0.04,
+        "rank": 2,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for SGOL: neutral outlook. "
+      },
+      {
+        "ticker": "GC=F",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "Gold Dec 25",
+        "expected_return": 0.04,
+        "rank": 3,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for GC=F: neutral outlook. "
+      },
+      {
+        "ticker": "IAU",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "iShares Gold Trust",
+        "expected_return": 0.04,
+        "rank": 4,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for IAU: neutral outlook. "
+      },
+      {
+        "ticker": "GDX",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "VanEck Gold Miners ETF",
+        "expected_return": 0.04,
+        "rank": 5,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for GDX: neutral outlook. "
+      }
+    ],
+    "long_term": [
+      {
+        "ticker": "GLD",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "SPDR Gold Shares",
+        "expected_return": 0.04,
+        "rank": 1,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for GLD: neutral outlook. "
+      },
+      {
+        "ticker": "SGOL",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "abrdn Physical Gold Shares ETF",
+        "expected_return": 0.04,
+        "rank": 2,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for SGOL: neutral outlook. "
+      },
+      {
+        "ticker": "GC=F",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "Gold Dec 25",
+        "expected_return": 0.04,
+        "rank": 3,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for GC=F: neutral outlook. "
+      },
+      {
+        "ticker": "IAU",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "iShares Gold Trust",
+        "expected_return": 0.04,
+        "rank": 4,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for IAU: neutral outlook. "
+      },
+      {
+        "ticker": "GDX",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "VanEck Gold Miners ETF",
+        "expected_return": 0.04,
+        "rank": 5,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for GDX: neutral outlook. "
+      }
+    ],
+    "next_quarter_top_picks": [
+      {
+        "ticker": "GLD",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "SPDR Gold Shares",
+        "expected_return": 0.04,
+        "rank": 1,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for GLD: neutral outlook. "
+      },
+      {
+        "ticker": "SGOL",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "abrdn Physical Gold Shares ETF",
+        "expected_return": 0.04,
+        "rank": 2,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for SGOL: neutral outlook. "
+      },
+      {
+        "ticker": "GC=F",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "Gold Dec 25",
+        "expected_return": 0.04,
+        "rank": 3,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for GC=F: neutral outlook. "
+      },
+      {
+        "ticker": "IAU",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "iShares Gold Trust",
+        "expected_return": 0.04,
+        "rank": 4,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for IAU: neutral outlook. "
+      },
+      {
+        "ticker": "GDX",
+        "gold_type": "ETF",
+        "timeframe": "long-term",
+        "label": "VanEck Gold Miners ETF",
+        "expected_return": 0.04,
+        "rank": 5,
+        "sentiment": "neutral",
+        "confidence": 0.8,
+        "summary": "Gold analysis for GDX: neutral outlook. "
+      }
+    ]
+  },
+  "market_conditions": {
+    "vix_level": 0.4192500114440918,
+    "dollar_strength": 0.8176750183105469,
+    "inflation_expectations": 0.025,
+    "interest_rate_trend": 0.01,
+    "economic_growth": 0.02,
+    "geopolitical_risk": 0.5,
+    "real_rates": 0.01
+  },
+  "macro_context_used": false
+}

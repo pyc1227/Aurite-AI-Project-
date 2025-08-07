@@ -39,7 +39,7 @@ class DatabaseConfig(BaseModel):
 class OpenAIConfig(BaseModel):
     """OpenAI API configuration settings."""
     api_key: str = Field(..., description="OpenAI API key")
-    model: str = Field(default="gpt-4", description="OpenAI model to use")
+    model: str = Field(default="gpt-4o", description="OpenAI model to use")
     max_tokens: int = Field(default=1000, description="Maximum tokens per response")
     temperature: float = Field(default=0.7, description="Response creativity level")
 
@@ -114,7 +114,7 @@ class Config:
         openai_api_key = os.getenv("OPENAI_API_KEY", "")
         self.openai = OpenAIConfig(
             api_key=openai_api_key,
-            model=self._get_env("OPENAI_MODEL", "gpt-4"),
+            model=self._get_env("OPENAI_MODEL", "gpt-4o"),
             max_tokens=int(self._get_env("OPENAI_MAX_TOKENS", "1000")),
             temperature=float(self._get_env("OPENAI_TEMPERATURE", "0.7"))
         )

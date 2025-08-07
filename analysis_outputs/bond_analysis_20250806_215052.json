@@ -1,0 +1,311 @@
+{
+  "prediction_date": "2025-08-06",
+  "analysis_type": "Quantitative bond analysis",
+  "total_bonds": 8,
+  "horizons": {
+    "next_quarter": [
+      {
+        "ticker": "HYG",
+        "bond_type": "high_yield",
+        "duration": "mixed",
+        "label": "iShares iBoxx $ High Yield Corpo...",
+        "expected_return": 0.07439671837471663,
+        "rank": 1,
+        "sentiment": "bullish",
+        "confidence": 0.7000000000000001,
+        "summary": "Bullish outlook for high_yield bonds (mixed duration). ."
+      },
+      {
+        "ticker": "SHY",
+        "bond_type": "treasury",
+        "duration": "short",
+        "label": "iShares 1-3 Year Treasury Bond ETF",
+        "expected_return": 0.014006083430285077,
+        "rank": 2,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for treasury bonds (short duration). Short duration provides rate protection."
+      },
+      {
+        "ticker": "LQD",
+        "bond_type": "treasury",
+        "duration": "intermediate",
+        "label": "iShares iBoxx $ Investment Grade...",
+        "expected_return": -0.006105990431096868,
+        "rank": 3,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for treasury bonds (intermediate duration). ."
+      },
+      {
+        "ticker": "BND",
+        "bond_type": "aggregate",
+        "duration": "intermediate",
+        "label": "Vanguard Total Bond Market Index...",
+        "expected_return": -0.007167571910263841,
+        "rank": 4,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for aggregate bonds (intermediate duration). ."
+      },
+      {
+        "ticker": "AGG",
+        "bond_type": "aggregate",
+        "duration": "intermediate",
+        "label": "iShares Core U.S. Aggregate Bond...",
+        "expected_return": -0.0071961891557826545,
+        "rank": 5,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for aggregate bonds (intermediate duration). ."
+      },
+      {
+        "ticker": "IEF",
+        "bond_type": "treasury",
+        "duration": "intermediate",
+        "label": "iShares 7-10 Year Treasury Bond ETF",
+        "expected_return": -0.00823114966270017,
+        "rank": 6,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for treasury bonds (intermediate duration). ."
+      },
+      {
+        "ticker": "TIPS",
+        "bond_type": "treasury",
+        "duration": "intermediate",
+        "label": "Tianrong Internet Products and S...",
+        "expected_return": -0.04913043407839502,
+        "rank": 7,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for treasury bonds (intermediate duration). ."
+      },
+      {
+        "ticker": "TLT",
+        "bond_type": "treasury",
+        "duration": "long",
+        "label": "iShares 20+ Year Treasury Bond ETF",
+        "expected_return": -0.056230635288480595,
+        "rank": 8,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for treasury bonds (long duration). ."
+      }
+    ],
+    "next_year": [
+      {
+        "ticker": "HYG",
+        "bond_type": "high_yield",
+        "duration": "mixed",
+        "label": "iShares iBoxx $ High Yield Corpo...",
+        "expected_return": 0.07439671837471663,
+        "rank": 1,
+        "sentiment": "bullish",
+        "confidence": 0.7000000000000001,
+        "summary": "Bullish outlook for high_yield bonds (mixed duration). ."
+      },
+      {
+        "ticker": "SHY",
+        "bond_type": "treasury",
+        "duration": "short",
+        "label": "iShares 1-3 Year Treasury Bond ETF",
+        "expected_return": 0.014006083430285077,
+        "rank": 2,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for treasury bonds (short duration). Short duration provides rate protection."
+      },
+      {
+        "ticker": "LQD",
+        "bond_type": "treasury",
+        "duration": "intermediate",
+        "label": "iShares iBoxx $ Investment Grade...",
+        "expected_return": -0.006105990431096868,
+        "rank": 3,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for treasury bonds (intermediate duration). ."
+      },
+      {
+        "ticker": "BND",
+        "bond_type": "aggregate",
+        "duration": "intermediate",
+        "label": "Vanguard Total Bond Market Index...",
+        "expected_return": -0.007167571910263841,
+        "rank": 4,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for aggregate bonds (intermediate duration). ."
+      },
+      {
+        "ticker": "AGG",
+        "bond_type": "aggregate",
+        "duration": "intermediate",
+        "label": "iShares Core U.S. Aggregate Bond...",
+        "expected_return": -0.0071961891557826545,
+        "rank": 5,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for aggregate bonds (intermediate duration). ."
+      },
+      {
+        "ticker": "IEF",
+        "bond_type": "treasury",
+        "duration": "intermediate",
+        "label": "iShares 7-10 Year Treasury Bond ETF",
+        "expected_return": -0.00823114966270017,
+        "rank": 6,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for treasury bonds (intermediate duration). ."
+      },
+      {
+        "ticker": "TIPS",
+        "bond_type": "treasury",
+        "duration": "intermediate",
+        "label": "Tianrong Internet Products and S...",
+        "expected_return": -0.04913043407839502,
+        "rank": 7,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for treasury bonds (intermediate duration). ."
+      },
+      {
+        "ticker": "TLT",
+        "bond_type": "treasury",
+        "duration": "long",
+        "label": "iShares 20+ Year Treasury Bond ETF",
+        "expected_return": -0.056230635288480595,
+        "rank": 8,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for treasury bonds (long duration). ."
+      }
+    ],
+    "long_term": [
+      {
+        "ticker": "HYG",
+        "bond_type": "high_yield",
+        "duration": "mixed",
+        "label": "iShares iBoxx $ High Yield Corpo...",
+        "expected_return": 0.07439671837471663,
+        "rank": 1,
+        "sentiment": "bullish",
+        "confidence": 0.7000000000000001,
+        "summary": "Bullish outlook for high_yield bonds (mixed duration). ."
+      },
+      {
+        "ticker": "SHY",
+        "bond_type": "treasury",
+        "duration": "short",
+        "label": "iShares 1-3 Year Treasury Bond ETF",
+        "expected_return": 0.014006083430285077,
+        "rank": 2,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for treasury bonds (short duration). Short duration provides rate protection."
+      },
+      {
+        "ticker": "LQD",
+        "bond_type": "treasury",
+        "duration": "intermediate",
+        "label": "iShares iBoxx $ Investment Grade...",
+        "expected_return": -0.006105990431096868,
+        "rank": 3,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for treasury bonds (intermediate duration). ."
+      },
+      {
+        "ticker": "BND",
+        "bond_type": "aggregate",
+        "duration": "intermediate",
+        "label": "Vanguard Total Bond Market Index...",
+        "expected_return": -0.007167571910263841,
+        "rank": 4,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for aggregate bonds (intermediate duration). ."
+      },
+      {
+        "ticker": "AGG",
+        "bond_type": "aggregate",
+        "duration": "intermediate",
+        "label": "iShares Core U.S. Aggregate Bond...",
+        "expected_return": -0.0071961891557826545,
+        "rank": 5,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for aggregate bonds (intermediate duration). ."
+      },
+      {
+        "ticker": "IEF",
+        "bond_type": "treasury",
+        "duration": "intermediate",
+        "label": "iShares 7-10 Year Treasury Bond ETF",
+        "expected_return": -0.00823114966270017,
+        "rank": 6,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for treasury bonds (intermediate duration). ."
+      },
+      {
+        "ticker": "TIPS",
+        "bond_type": "treasury",
+        "duration": "intermediate",
+        "label": "Tianrong Internet Products and S...",
+        "expected_return": -0.04913043407839502,
+        "rank": 7,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for treasury bonds (intermediate duration). ."
+      },
+      {
+        "ticker": "TLT",
+        "bond_type": "treasury",
+        "duration": "long",
+        "label": "iShares 20+ Year Treasury Bond ETF",
+        "expected_return": -0.056230635288480595,
+        "rank": 8,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for treasury bonds (long duration). ."
+      }
+    ],
+    "next_quarter_top_picks": [
+      {
+        "ticker": "HYG",
+        "bond_type": "high_yield",
+        "duration": "mixed",
+        "label": "iShares iBoxx $ High Yield Corpo...",
+        "expected_return": 0.07439671837471663,
+        "rank": 1,
+        "sentiment": "bullish",
+        "confidence": 0.7000000000000001,
+        "summary": "Bullish outlook for high_yield bonds (mixed duration). ."
+      },
+      {
+        "ticker": "SHY",
+        "bond_type": "treasury",
+        "duration": "short",
+        "label": "iShares 1-3 Year Treasury Bond ETF",
+        "expected_return": 0.014006083430285077,
+        "rank": 2,
+        "sentiment": "bearish",
+        "confidence": 0.8,
+        "summary": "Bearish outlook for treasury bonds (short duration). Short duration provides rate protection."
+      }
+    ]
+  },
+  "market_conditions": {
+    "vix_level": 0.4192500114440918,
+    "interest_rate_trend": 0.01,
+    "yield_curve_slope": 0.0001999979019165002,
+    "inflation_expectations": 0.025,
+    "economic_growth": 0.02,
+    "credit_spreads": 0.015,
+    "fed_policy_stance": 0.0
+  },
+  "macro_context_used": false
+}

@@ -56,11 +56,11 @@ def check_dependencies():
 
 @dataclass
 class LLMConfig:
-    """Configuration for LLM integration"""
-    model: str = "gpt-3.5-turbo"
+    """LLM configuration for bond analysis"""
+    model: str = "gpt-4o"
     temperature: float = 0.6
     max_tokens: int = 1000
-    api_key: Optional[str] = None
+    api_key: str = ""
 
 @dataclass
 class AgentConfig:
@@ -386,35 +386,31 @@ class BondAnalysisAgent:
         ]
     
     def _create_default_config(self) -> AgentConfig:
-        """Create default agent configuration"""
-        system_prompt = """You are an advanced Bond Analysis Agent specializing in fixed income investments 
-        using LLM-powered intelligence for comprehensive bond analysis.
-
-        Your core competencies include:
-        1. DURATION ANALYSIS: Short, intermediate, and long-term bond sensitivity to interest rates
-        2. CREDIT ANALYSIS: Treasury, investment grade, high yield, and emerging market credit assessment
-        3. YIELD CURVE POSITIONING: Understanding term structure and curve dynamics
-        4. INFLATION PROTECTION: TIPS and real return analysis
-        5. SECTOR ROTATION: Government, corporate, municipal, and international bond allocation
-        6. TECHNICAL ANALYSIS: Bond price momentum, volatility, and trend analysis
-        7. MACROECONOMIC INTEGRATION: Fed policy, inflation expectations, economic growth impact
-        8. RISK MANAGEMENT: Duration risk, credit risk, and currency risk assessment"""
-        
-        api_key = os.getenv('OPENAI_API_KEY')
-        
+        """Create default configuration"""
         llm_config = LLMConfig(
-            model="gpt-3.5-turbo",
-            temperature=0.6,  # Conservative for bonds
+            model="gpt-4o",
+            temperature=0.6,
             max_tokens=1000,
-            api_key=api_key
+            api_key=os.getenv("OPENAI_API_KEY", "")
         )
         
         return AgentConfig(
-            name="bond_analysis_agent",
-            system_prompt=system_prompt,
+            name="Bond Analysis Agent",
+            system_prompt="""You are a senior fixed income analyst with 15+ years of experience in bond markets and portfolio management. 
+            You specialize in comprehensive bond and bond ETF analysis using advanced duration modeling, credit analysis, and macroeconomic insights.
+            
+            Your expertise includes:
+            - Duration Analysis: Interest rate sensitivity, yield curve positioning, convexity analysis
+            - Credit Analysis: Credit quality assessment, default risk modeling, spread analysis
+            - Sector Analysis: Government, corporate, municipal, and international bond markets
+            - Macroeconomic Integration: Fed policy impact, inflation expectations, economic cycle sensitivity
+            - Risk Management: Duration risk, credit risk, liquidity risk, currency risk assessment
+            - Portfolio Construction: Bond laddering, barbell/bullet strategies, asset allocation optimization
+            
+            Provide institutional-grade bond analysis with actionable insights, clear risk assessments, and specific investment recommendations.""",
             llm_config=llm_config,
             analysis_depth="comprehensive",
-            enable_llm_commentary=bool(api_key)
+            enable_llm_commentary=True
         )
 
     async def classify_bond_with_llm(self, symbol: str, info: Dict) -> Tuple[str, str]:
@@ -1203,7 +1199,7 @@ async def quick_bond_analysis(symbols: List[str] = None, api_key: str = None) ->
         logger.error(f"Quick bond analysis failed: {e}")
         return {"error": str(e)}
 
-def create_custom_bond_agent(openai_api_key: str = None, model: str = "gpt-3.5-turbo") -> BondAnalysisAgent:
+def create_custom_bond_agent(openai_api_key: str = None, model: str = "gpt-4o") -> BondAnalysisAgent:
     """Create bond agent with custom configuration"""
     
     llm_config = LLMConfig(
@@ -1333,7 +1329,7 @@ async def demo_with_api_key():
     api_key = input("Enter your OpenAI API key (or press Enter to skip): ").strip()
     
     if api_key:
-        agent = create_custom_bond_agent(api_key, model="gpt-4")
+        agent = create_custom_bond_agent(api_key, model="gpt-4o")
         print("✅ Using GPT-4 for enhanced bond analysis")
     else:
         agent = BondAnalysisAgent()
@@ -1417,7 +1413,7 @@ agent = create_custom_bond_agent("your-api-key-here")
 results = await agent.analyze_bonds()
 
 # Using GPT-4 for institutional-grade analysis
-agent = create_custom_bond_agent("your-api-key", model="gpt-4")
+agent = create_custom_bond_agent("your-api-key", model="gpt-4o")
 
 ANALYSIS FEATURES:
 ==================
